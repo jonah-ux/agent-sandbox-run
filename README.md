@@ -25,6 +25,18 @@ Run a bounded command and inspect the receipt:
 agent-sandbox run --timeout 5 /bin/echo hello
 ```
 
+## See it work
+
+The receipt names the backend and whether isolation was actually enforced:
+
+```json
+{"schema":"agent-sandbox/v1","ok":true,"backend":"fallback","enforced":false,"exit_code":0,"stdout":"hello from the sandbox\n"}
+```
+
+## Related tools
+
+Use [Agent Policy](https://github.com/jonah-ux/agent-policy) before deciding whether a command may run, [Agent Proof](https://github.com/jonah-ux/agent-proof) to archive the receipt, and [MCP Doctor](https://github.com/jonah-ux/mcp-doctor) to inspect the tools an agent can call.
+
 Look for `backend`, `enforced`, `exit_code`, and `duration_ms` in the `agent-sandbox/v1`
 result. A fallback execution is still useful evidence, but it is not isolation.
 
