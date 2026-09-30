@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-pip install git+https://github.com/jonah-ux/agent-sandbox-run.git@v0.1.0
+pip install git+https://github.com/jonah-ux/agent-sandbox-run.git@main
 ```
 
 ## Quick start
