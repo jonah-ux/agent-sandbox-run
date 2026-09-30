@@ -1,22 +1,32 @@
-# Explicit Command Isolation Runner
+# Agent Sandbox Run
 
 ![explicit command isolation runner workflow](docs/header.svg)
 
 **Run a command with visible limits and an honest receipt of what was enforced.**
 
-## Install
+[![CI](https://github.com/jonah-ux/agent-sandbox-run/actions/workflows/ci.yml/badge.svg)](https://github.com/jonah-ux/agent-sandbox-run/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
+
+Agent Sandbox Run executes a command and emits a JSON receipt showing the exit code, duration,
+stdout, timeout behavior, and whether bubblewrap was actually available as the backend. The
+fallback is intentionally visible instead of being described as isolation.
+
+## Try it in 30 seconds
 
 ```bash
-pip install git+https://github.com/jonah-ux/agent-sandbox-run.git@main
+python -m pip install git+https://github.com/jonah-ux/agent-sandbox-run.git@main
+python demos/demo.py
 ```
 
-## Quick start
+Run a bounded command and inspect the receipt:
 
 ```bash
-agent-sandbox --help
+agent-sandbox run --timeout 5 /bin/echo hello
 ```
 
-The first release is intentionally small, offline-friendly, and easy to inspect. JSON output is designed for agents; diagnostics stay explicit.
+Look for `backend`, `enforced`, `exit_code`, and `duration_ms` in the `agent-sandbox/v1`
+result. A fallback execution is still useful evidence, but it is not isolation.
 
 ## Development
 
@@ -26,8 +36,7 @@ python -m build --sdist --wheel
 python demos/demo.py
 ```
 
-## Limits
+Read [SECURITY.md](SECURITY.md) before using this around untrusted commands. Treat the receipt
+as an observation of this process, not a system security guarantee.
 
-Read the command help and [release guide](docs/releasing.md) before using this in automation. This project does not claim permissions, isolation, verification, or provider behavior beyond the output fields it can prove.
-
-MIT licensed. Contributions and sanitized bug reports are welcome.
+MIT licensed.
