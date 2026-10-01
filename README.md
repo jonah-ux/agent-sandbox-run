@@ -9,8 +9,9 @@
 [![License](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
 
 Agent Sandbox Run executes a command and emits a JSON receipt showing the exit code, duration,
-stdout, timeout behavior, and whether bubblewrap was actually available as the backend. The
-fallback is intentionally visible instead of being described as isolation.
+stdout, timeout behavior, command and output digests, bounded output state, and whether bubblewrap
+was actually available as the backend. The fallback is intentionally visible instead of being
+described as isolation.
 
 ## Try it in 30 seconds
 
@@ -22,7 +23,7 @@ python demos/demo.py
 Run a bounded command and inspect the receipt:
 
 ```bash
-agent-sandbox run --timeout 5 /bin/echo hello
+agent-sandbox run --timeout 5 --max-output 4096 /bin/echo hello
 ```
 
 ## See it work
@@ -30,15 +31,16 @@ agent-sandbox run --timeout 5 /bin/echo hello
 The receipt names the backend and whether isolation was actually enforced:
 
 ```json
-{"schema":"agent-sandbox/v1","ok":true,"backend":"fallback","enforced":false,"exit_code":0,"stdout":"hello from the sandbox\n"}
+{"schema":"agent-sandbox/v2","ok":true,"backend":"fallback","enforced":false,"exit_code":0,"timed_out":false,"stdout":"hello from the sandbox\n","stdout_sha256":"...","receipt_sha256":"..."}
 ```
 
 ## Related tools
 
 Use [Agent Policy](https://github.com/jonah-ux/agent-policy) before deciding whether a command may run, [Agent Proof](https://github.com/jonah-ux/agent-proof) to archive the receipt, and [MCP Doctor](https://github.com/jonah-ux/mcp-doctor) to inspect the tools an agent can call.
 
-Look for `backend`, `enforced`, `exit_code`, and `duration_ms` in the `agent-sandbox/v1`
-result. A fallback execution is still useful evidence, but it is not isolation.
+Look for `backend`, `enforced`, `exit_code`, `timed_out`, `command_sha256`, `stdout_sha256`,
+`stdout_truncated`, and `receipt_sha256` in the `agent-sandbox/v2` result. A fallback execution is
+still useful evidence, but it is not isolation.
 
 ## Development
 
