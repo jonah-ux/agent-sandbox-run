@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent_sandbox_run"
-version = "0.1.0"
+version = "0.1.1"
 description = "explicit command isolation runner"
 readme = "README.md"
 requires-python = ">=3.11"
