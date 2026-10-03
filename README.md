@@ -69,4 +69,18 @@ python demos/demo.py
 Read [SECURITY.md](SECURITY.md) before using this around untrusted commands. Treat the receipt
 as an observation of this process, not a system security guarantee.
 
+## Public surface audit
+
+Run the owner-native supply-chain and privacy audit from a clean checkout:
+
+```console
+python scripts/audit_public_surface.py --json
+```
+
+The static receipt checks the dependency and license declarations, release-workflow provenance
+markers, and high-signal secret patterns across tracked text files. Pass a built `dist/` directory
+with `--dist-dir dist` to compare wheel and sdist bytes with `SHA256SUMS`. Missing artifacts remain
+`unavailable`; a passing audit does not claim security, deployment, adoption, or production
+readiness.
+
 MIT licensed.
