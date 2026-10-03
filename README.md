@@ -16,7 +16,11 @@ described as isolation.
 ## Try it in 30 seconds
 
 ```bash
-python -m pip install git+https://github.com/jonah-ux/agent-sandbox-run.git@main
+git clone --branch v0.2.0 --depth 1 https://github.com/jonah-ux/agent-sandbox-run.git
+cd agent-sandbox-run
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install .
 python demos/demo.py
 ```
 
@@ -25,6 +29,10 @@ Run a bounded command and inspect the receipt:
 ```bash
 agent-sandbox run --timeout 5 --max-output 4096 /bin/echo hello
 ```
+
+## Capability walkthrough
+
+Open the [standalone capability walkthrough](docs/walkthrough.html) for a visual, synthetic receipt and backend matrix. It does not inspect your machine or require Agent Policy, Agent Proof, or any other sibling repository.
 
 ## See it work
 
