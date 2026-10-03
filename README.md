@@ -28,7 +28,7 @@ git clone --branch v0.2.0 --depth 1 https://github.com/jonah-ux/agent-sandbox-ru
 cd agent-sandbox-run
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install .
+python3 -m pip install .
 python demos/demo.py
 ```
 
@@ -61,8 +61,8 @@ still useful evidence, but it is not isolation.
 ## Development
 
 ```bash
-python -m unittest discover -s tests
-python -m build --sdist --wheel
+python3 -m unittest discover -s tests
+python3 -m build --sdist --wheel
 python demos/demo.py
 ```
 
@@ -74,7 +74,7 @@ as an observation of this process, not a system security guarantee.
 Run the owner-native supply-chain and privacy audit from a clean checkout:
 
 ```console
-python scripts/audit_public_surface.py --json
+python3 scripts/audit_public_surface.py --json
 ```
 
 The static receipt checks the dependency and license declarations, release-workflow provenance

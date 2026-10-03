@@ -11,6 +11,6 @@ failed/unknown observation. The manifest records Agent Proof's existing
 reviewed Agent Proof manifest revision and SHA-256; it does not create a second
 registry.
 
-Run `python -m unittest discover -s tests` or the focused conformance test from
+Run `python3 -m unittest discover -s tests` or the focused conformance test from
 a fresh checkout. The fixtures execute only `/bin/echo` and a bounded synthetic
 sleep command.
