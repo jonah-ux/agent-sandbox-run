@@ -26,6 +26,10 @@ Run a bounded command and inspect the receipt:
 agent-sandbox run --timeout 5 --max-output 4096 /bin/echo hello
 ```
 
+## Capability walkthrough
+
+Open the [standalone capability walkthrough](docs/walkthrough.html) for a visual, synthetic receipt and backend matrix. It does not inspect your machine or require Agent Policy, Agent Proof, or any other sibling repository.
+
 ## See it work
 
 The receipt names the backend and whether isolation was actually enforced:
