@@ -13,6 +13,14 @@ stdout, timeout behavior, command and output digests, bounded output state, and 
 was actually available as the backend. The fallback is intentionally visible instead of being
 described as isolation.
 
+The receipt also separates backend discovery from backend proof: `backend_detected` means a
+`bwrap` executable was found, `backend_attempted` means its boundary probe ran, `enforced` means
+the probe succeeded and the command used that boundary, and `backend_failed` plus
+`backend_failure_reason` explain a clean downgrade to fallback. The probe runs a harmless
+`/bin/true` inside the same read-only/no-network shape before the requested command. Every command
+starts a new process session; a timeout kills that entire process group before the receipt is
+emitted.
+
 ## Try it in 30 seconds
 
 ```bash
@@ -39,7 +47,7 @@ Open the [standalone capability walkthrough](docs/walkthrough.html) for a visual
 The receipt names the backend and whether isolation was actually enforced:
 
 ```json
-{"schema":"agent-sandbox/v2","ok":true,"backend":"fallback","enforced":false,"exit_code":0,"timed_out":false,"stdout":"hello from the sandbox\n","stdout_sha256":"...","receipt_sha256":"..."}
+{"schema":"agent-sandbox/v2","ok":true,"backend":"fallback","enforced":false,"backend_detected":false,"backend_attempted":false,"backend_failed":false,"exit_code":0,"timed_out":false,"stdout":"hello from the sandbox\n","stdout_sha256":"...","receipt_sha256":"..."}
 ```
 
 ## Related tools
