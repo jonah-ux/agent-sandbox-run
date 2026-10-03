@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -34,6 +36,80 @@ def _receipt_digest(receipt: dict[str, Any]) -> str:
     return _sha256(_canonical(unsigned))
 
 
+def _run_process(
+    command: list[str],
+    *,
+    cwd: str,
+    timeout: int,
+) -> tuple[int, str, str, bool, str | None]:
+    """Run one process and terminate its entire session on timeout.
+
+    The extra spawn-error value lets the caller distinguish a command's non-zero
+    result from a backend that could not be started at all.
+    """
+
+    try:
+        process = subprocess.Popen(
+            command,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=cwd,
+            start_new_session=True,
+        )
+    except OSError as exc:
+        return 127, "", str(exc), False, str(exc)
+
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+        return process.returncode, stdout or "", stderr or "", False, None
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        stdout, stderr = process.communicate()
+        return 124, stdout or "", (stderr or "") or "timeout", True, None
+
+
+def _probe_backend(
+    backend: str,
+    *,
+    root: str,
+    cwd: str,
+    timeout: int,
+) -> tuple[bool, int, str]:
+    """Check that the detected backend can create its declared boundary."""
+
+    probe = [
+        backend,
+        "--ro-bind",
+        root,
+        "/workspace",
+        "--chdir",
+        "/workspace",
+        "--proc",
+        "/proc",
+        "--dev",
+        "/dev",
+        "--unshare-net",
+        "--",
+        "/bin/true",
+    ]
+    code, _stdout, _stderr, timed_out, spawn_error = _run_process(
+        probe,
+        cwd=cwd,
+        timeout=min(timeout, 5),
+    )
+    if timed_out:
+        return False, code, "probe_timeout"
+    if spawn_error:
+        return False, code, "probe_spawn_error"
+    if code != 0:
+        return False, code, "probe_exit"
+    return True, code, ""
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="agent-sandbox")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -51,20 +127,38 @@ def main(argv: list[str] | None = None) -> int:
     root = str(Path(args.root).resolve())
     cwd = str(Path(args.cwd or root).resolve())
     backend = shutil.which("bwrap")
-    enforced = bool(backend)
+    backend_detected = bool(backend)
+    backend_attempted = False
+    backend_failed = False
+    backend_failure_reason: str | None = None
+    backend_probe_exit_code: int | None = None
+    enforced = False
+    if backend:
+        backend_attempted = True
+        usable, backend_probe_exit_code, backend_failure_reason = _probe_backend(
+            backend,
+            root=root,
+            cwd=cwd,
+            timeout=args.timeout,
+        )
+        if usable:
+            enforced = True
+            backend_failure_reason = None
     if enforced:
         actual = [backend, "--ro-bind", root, "/workspace", "--chdir", "/workspace", "--proc", "/proc", "--dev", "/dev", "--unshare-net", "--", *command]
     else:
+        if backend_attempted and backend_failure_reason:
+            backend_failed = True
         actual = command
 
     started = time.time()
-    timed_out = False
-    try:
-        result = subprocess.run(actual, text=True, capture_output=True, timeout=args.timeout, cwd=cwd)
-        code, stdout, stderr = result.returncode, result.stdout, result.stderr
-    except subprocess.TimeoutExpired as exc:
-        timed_out = True
-        code, stdout, stderr = 124, exc.stdout or "", "timeout"
+    code, stdout, stderr, timed_out, spawn_error = _run_process(actual, cwd=cwd, timeout=args.timeout)
+    if spawn_error and enforced:
+        backend_failed = True
+        backend_failure_reason = "execution_spawn_error"
+        enforced = False
+        actual = command
+        code, stdout, stderr, timed_out, _spawn_error = _run_process(actual, cwd=cwd, timeout=args.timeout)
 
     stdout, stdout_truncated = _bounded(stdout, args.max_output)
     stderr, stderr_truncated = _bounded(stderr, args.max_output)
@@ -75,6 +169,11 @@ def main(argv: list[str] | None = None) -> int:
         "exit_code": code,
         "backend": "bubblewrap" if enforced else "fallback",
         "enforced": enforced,
+        "backend_detected": backend_detected,
+        "backend_attempted": backend_attempted,
+        "backend_failed": backend_failed,
+        "backend_failure_reason": backend_failure_reason,
+        "backend_probe_exit_code": backend_probe_exit_code,
         "timed_out": timed_out,
         "duration_ms": round((time.time() - started) * 1000),
         "command": command,
