@@ -16,7 +16,11 @@ described as isolation.
 ## Try it in 30 seconds
 
 ```bash
-python -m pip install git+https://github.com/jonah-ux/agent-sandbox-run.git@main
+git clone --branch v0.2.0 --depth 1 https://github.com/jonah-ux/agent-sandbox-run.git
+cd agent-sandbox-run
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install .
 python demos/demo.py
 ```
 
