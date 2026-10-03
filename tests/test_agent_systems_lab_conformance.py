@@ -23,7 +23,7 @@ def test_manifest_pins_native_owner_and_shared_adapter():
     assert manifest["owner"] == "agent-sandbox-run"
     assert manifest["native_schema"] == "agent-sandbox/v2"
     assert manifest["shared_adapter"]["schema"] == "agent-proof/interop/v1"
-    assert manifest["shared_adapter"]["revision"] == "8dbbef023797e08f73739d535e070787a1b86af4"
+    assert manifest["shared_adapter"]["revision"] == "2c8767257d4da2e78da73e93a82f7d066f3f1b8e"
     assert manifest["shared_adapter"]["manifest_sha256"] == "51de868a5dc0c44e5cb700609dc0e687aabccc2074acf7113f55c5917fcc9551"
     assert len(manifest["cases"]) == 5
     assert manifest["privacy"]["raw_output_bounded"] is True
