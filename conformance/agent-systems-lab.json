@@ -5,8 +5,9 @@
   "shared_adapter": {
     "owner": "agent-proof",
     "schema": "agent-proof/interop/v1",
-    "manifest_url": "https://github.com/jonah-ux/agent-proof/blob/283a5e69db44d43f87876b4b30b576a0dcac7930/conformance/agent-systems-lab.json",
-    "revision": "283a5e69db44d43f87876b4b30b576a0dcac7930"
+    "manifest_url": "https://github.com/jonah-ux/agent-proof/blob/8dbbef023797e08f73739d535e070787a1b86af4/conformance/agent-systems-lab.json",
+    "revision": "8dbbef023797e08f73739d535e070787a1b86af4",
+    "manifest_sha256": "51de868a5dc0c44e5cb700609dc0e687aabccc2074acf7113f55c5917fcc9551"
   },
   "cases": [
     {"name": "bounded-success", "ok": true, "status": "observed"},
