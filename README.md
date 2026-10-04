@@ -47,7 +47,7 @@ Open the [standalone capability walkthrough](docs/walkthrough.html) for a visual
 The receipt names the backend and whether isolation was actually enforced:
 
 ```json
-{"schema":"agent-sandbox/v2","ok":true,"backend":"fallback","enforced":false,"backend_detected":false,"backend_attempted":false,"backend_failed":false,"exit_code":0,"timed_out":false,"stdout":"hello from the sandbox\n","stdout_sha256":"...","receipt_sha256":"..."}
+{"schema":"agent-sandbox/v2","ok":true,"backend":"fallback","enforced":false,"backend_detected":false,"backend_attempted":false,"backend_failed":false,"exit_code":0,"timed_out":false,"stdout":"hello\n","stdout_sha256":"...","receipt_sha256":"..."}
 ```
 
 ## Related tools
